@@ -19,7 +19,7 @@
     <div class="row">
         <div class="col-12">
             <div class="card">
-                <form id="invoiceForm" method="POST" action="">
+                <form id="invoiceForm" method="POST" action="{{ route('user.store.invoice') }}">
                     @csrf
                     <div class="card shadow border mb-4">
                         <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
@@ -30,29 +30,94 @@
                         </div>
                         <div class="card-body p-0">
                             <div class="table-responsive">
+                                <div class="row p-3 m-0">
+                                    <div class="col-md-6">
+                                        <h6 class="fw-bold">Billed To</h6>
+                                        <div class="mb-2">
+                                            <label for="billed_name" class="form-label">Name</label>
+                                            <input type="text" name="billed_name" id="billed_name" class="form-control"
+                                                placeholder="Customer Name">
+                                            <span class="text-danger pb-4" id="billed_name_error"></span>
+                                        </div>
+                                        <div class="mb-2">
+                                            <label for="billed_address" class="form-label">Address</label>
+                                            <textarea name="billed_address" id="billed_address" class="form-control" rows="2" placeholder="Full Address"></textarea>
+                                            <span class="text-danger pb-4" id="billed_address_error"></span>
+                                        </div>
+                                        <div class="mb-2">
+                                            <label for="billed_phone" class="form-label">Phone</label>
+                                            <input type="text" name="billed_phone" id="billed_phone" class="form-control"
+                                                placeholder="Phone Number">
+                                            <span class="text-danger pb-4" id="billed_phone_error"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h6 class="fw-bold">Shipped To</h6>
+                                        <div class="mb-2">
+                                            <label for="shipped_name" class="form-label">Name</label>
+                                            <input type="text" name="shipped_name" id="shipped_name" class="form-control"
+                                                placeholder="Shipping Contact">
+                                            <span class="text-danger pb-4" id="shipped_name_error"></span>
+                                        </div>
+                                        <div class="mb-2">
+                                            <label for="shipped_address" class="form-label">Address</label>
+                                            <textarea name="shipped_address" id="shipped_address" class="form-control" rows="2"
+                                                placeholder="Shipping Address"></textarea>
+                                            <span class="text-danger pb-4" id="shipped_address_error"></span>
+                                        </div>
+                                        <div class="mb-2">
+                                            <label for="shipped_phone" class="form-label">Phone</label>
+                                            <input type="text" name="shipped_phone" id="shipped_phone"
+                                                class="form-control" placeholder="Phone Number">
+                                            <span class="text-danger pb-4" id="shipped_phone_error"></span>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <table class="table table-hover align-middle table-bordered m-0" id="invoiceTable">
                                     <thead class="table-light text-center">
                                         <tr>
-                                            <th style="min-width: 140px">Item</th>
-                                            <th>Description</th>
-                                            <th>Hours</th>
+                                            <th style="min-width: 140px">Product</th>
+                                            <th>HSN Code</th>
+                                            <th>Design</th>
+                                            <th>Quantity</th>
                                             <th>Rate</th>
-                                            <th>Subtotal</th>
+                                            <th>Amount</th>
                                             <th style="width: 50px">Remove</th>
                                         </tr>
                                     </thead>
                                     <tbody id="invoiceBody">
                                         <tr>
-                                            <td><input type="text" name="items[0][title]" class="form-control"
-                                                    placeholder="Item Title" required></td>
-                                            <td><input type="text" name="items[0][description]" class="form-control"
-                                                    placeholder="Short description"></td>
-                                            <td><input type="number" name="items[0][hours]"
-                                                    class="form-control calc text-end" value="0"></td>
-                                            <td><input type="number" name="items[0][rate]"
-                                                    class="form-control calc text-end" value="0"></td>
-                                            <td><input type="text" name="items[0][subtotal]"
-                                                    class="form-control subtotal text-end bg-light" value="0" readonly>
+                                            <td>
+                                                <input type="text" name="items[0][product]" class="form-control"
+                                                    placeholder="Product Name">
+                                                <span class="text-danger error-text" data-name="items.0.product"></span>
+                                            </td>
+                                            <td>
+                                                <input type="text" name="items[0][hsn]" class="form-control"
+                                                    placeholder="HSN Code">
+                                                <span class="text-danger error-text" data-name="items.0.hsn"></span>
+                                            </td>
+                                            <td>
+                                                <input type="text" name="items[0][design]" class="form-control"
+                                                    placeholder="Design">
+                                                <span class="text-danger error-text" data-name="items.0.design"></span>
+                                            </td>
+                                            <td>
+                                                <input type="number" name="items[0][quantity]"
+                                                    class="form-control calc text-end" value="0">
+                                                <span class="text-danger error-text" data-name="items.0.quantity"></span>
+                                            </td>
+                                            <td>
+                                                <input type="number" name="items[0][rate]"
+                                                    class="form-control calc text-end" value="0">
+                                                <span class="text-danger error-text" data-name="items.0.rate"></span>
+                                            </td>
+                                            <td>
+                                                <input type="text" name="items[0][amount]"
+                                                    class="form-control subtotal text-end bg-light" value="0"
+                                                    readonly>
+                                                <span class="text-danger error-text" data-name="items.0.amount"></span>
                                             </td>
                                             <td class="text-center">
                                                 <button type="button" class="btn btn-sm btn-outline-danger remove-row">
@@ -71,16 +136,17 @@
                                     <label class="form-label fw-semibold">Subtotal:</label>
                                 </div>
                                 <div class="col-md-3">
-                                    <input type="text" id="subtotal" class="form-control text-end bg-white" readonly>
+                                    <input type="text" id="subtotal" name="subtotal"
+                                        class="form-control text-end bg-white" readonly>
                                 </div>
 
                                 <div class="col-md-4 offset-md-5 text-end">
                                     <label class="form-label fw-semibold">Tax %:</label>
                                 </div>
                                 <div class="col-md-3">
-                                    <input type="number" id="tax" class="form-control text-end" value="0">
+                                    <input type="number" id="tax" name="tax" class="form-control text-end"
+                                        value="0">
                                 </div>
-
                                 <div class="col-md-4 offset-md-5 text-end">
                                     <label class="form-label fw-semibold">Total:</label>
                                 </div>
@@ -88,7 +154,6 @@
                                     <input type="text" id="total" name="total"
                                         class="form-control text-end bg-light" readonly>
                                 </div>
-
                                 <div class="col-md-12 text-end pt-3">
                                     <button type="submit" class="btn btn-success">
                                         <i class="fas fa-save me-1"></i> Save Invoice
@@ -106,11 +171,12 @@
 @section('script')
     <script>
         let rowIndex = 1;
+
         function calculateRow(row) {
-            let hours = parseFloat(row.find('[name$="[hours]"]').val()) || 0;
+            let quantity = parseFloat(row.find('[name$="[quantity]"]').val()) || 0;
             let rate = parseFloat(row.find('[name$="[rate]"]').val()) || 0;
-            let subtotal = hours * rate;
-            row.find('.subtotal').val(subtotal.toFixed(2));
+            let amount = quantity * rate;
+            row.find('.subtotal').val(amount.toFixed(2));
         }
 
         function calculateTotal() {
@@ -127,19 +193,40 @@
 
         $(document).on('click', '#addRow', function() {
             let newRow = `
-        <tr>
-            <td><input type="text" name="items[${rowIndex}][title]" class="form-control" required></td>
-            <td><input type="text" name="items[${rowIndex}][description]" class="form-control"></td>
-            <td><input type="number" name="items[${rowIndex}][hours]" class="form-control calc text-end" value="0"></td>
-            <td><input type="number" name="items[${rowIndex}][rate]" class="form-control calc text-end" value="0"></td>
-            <td><input type="text" name="items[${rowIndex}][subtotal]" class="form-control subtotal text-end bg-light" value="0" readonly></td>
-            <td class="text-center">
-                <button type="button" class="btn btn-sm btn-outline-danger remove-row"><i class="fas fa-trash"></i></button>
-            </td>
-        </tr>`;
+<tr>
+    <td>
+        <input type="text" name="items[${rowIndex}][product]" class="form-control" placeholder="Product Name">
+        <span class="text-danger error-text" data-name="items.${rowIndex}.product"></span>
+    </td>
+    <td>
+        <input type="text" name="items[${rowIndex}][hsn]" class="form-control" placeholder="HSN Code">
+        <span class="text-danger error-text" data-name="items.${rowIndex}.hsn"></span>
+    </td>
+    <td>
+        <input type="text" name="items[${rowIndex}][design]" class="form-control" placeholder="Design">
+        <span class="text-danger error-text" data-name="items.${rowIndex}.design"></span>
+    </td>
+    <td>
+        <input type="number" name="items[${rowIndex}][quantity]" class="form-control calc text-end" value="0">
+        <span class="text-danger error-text" data-name="items.${rowIndex}.quantity"></span>
+    </td>
+    <td>
+        <input type="number" name="items[${rowIndex}][rate]" class="form-control calc text-end" value="0">
+        <span class="text-danger error-text" data-name="items.${rowIndex}.rate"></span>
+    </td>
+    <td>
+        <input type="text" name="items[${rowIndex}][amount]" class="form-control subtotal text-end bg-light" value="0" readonly>
+        <span class="text-danger error-text" data-name="items.${rowIndex}.amount"></span>
+    </td>
+    <td class="text-center">
+        <button type="button" class="btn btn-sm btn-outline-danger remove-row"><i class="fas fa-trash"></i></button>
+    </td>
+</tr>
+`;
             $('#invoiceBody').append(newRow);
             rowIndex++;
         });
+
 
         $(document).on('click', '.remove-row', function() {
             $(this).closest('tr').remove();
@@ -156,6 +243,74 @@
         $(document).ready(function() {
             calculateRow($('#invoiceBody tr:first'));
             calculateTotal();
+        });
+
+        $('#invoiceForm').on('submit', function(e) {
+            e.preventDefault();
+
+            let form = $(this);
+            let submitBtn = form.find('button[type=submit]');
+            let originalBtnHtml = submitBtn.html();
+            submitBtn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-1"></i> Saving...');
+
+            $.ajax({
+                url: form.attr('action'),
+                method: form.attr('method'),
+                data: form.serialize(),
+                success: function(response) {
+                    if (response.success) {
+                        Toast('success', response.message);
+                        form.trigger('reset');
+                        $('#invoiceBody').html(`
+            <tr>
+                <td><input type="text" name="items[0][product]" class="form-control" placeholder="Product Name"></td>
+                <td><input type="text" name="items[0][hsn]" class="form-control" placeholder="HSN Code"></td>
+                <td><input type="text" name="items[0][design]" class="form-control" placeholder="Design"></td>
+                <td><input type="number" name="items[0][quantity]" class="form-control calc text-end" value="0"></td>
+                <td><input type="number" name="items[0][rate]" class="form-control calc text-end" value="0"></td>
+                <td><input type="text" name="items[0][amount]" class="form-control subtotal text-end bg-light" value="0" readonly></td>
+                <td class="text-center">
+                    <button type="button" class="btn btn-sm btn-outline-danger remove-row">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
+            </tr>
+        `);
+
+                        $('#subtotal').val('0.00');
+                        $('#tax').val('0');
+                        $('#total').val('0.00');
+                        rowIndex = 1;
+                        setTimeout(function() {
+                            window.location.href = response.data.redirect_url;
+                        }, 3000);
+                    } else {
+                        submitBtn.prop('disabled', false).html(originalBtnHtml);
+                    }
+                },
+                error: function(response) {
+                    submitBtn.prop('disabled', false).html(originalBtnHtml);
+                    let errors = response.responseJSON?.errors;
+                    if (errors) {
+                        $('.error-text').text('');
+                        $.each(errors, function(key, value) {
+                            let errorField = $('.error-text[data-name="' + key + '"]');
+                            if (errorField.length) {
+                                errorField.text(value[0]);
+                            } else {
+                                $("#" + key + "_error").text(value[0]).show();
+                            }
+                        });
+                    } else {
+                        console.error("Unexpected error:", response);
+                        alert('An unexpected error occurred. Check console or contact support.');
+                    }
+                },
+                complete: function() {
+                    submitBtn.prop('disabled', false).html(
+                        '<i class="fas fa-save me-1"></i> Save Invoice');
+                }
+            });
         });
     </script>
 @endsection

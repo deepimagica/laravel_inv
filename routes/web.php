@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\User\AuthController;
 use App\Http\Controllers\User\DashboardController;
+use App\Http\Controllers\User\InvoiceController;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['middleware' => ['check.user:guest']], function () {
@@ -15,5 +16,6 @@ Route::prefix('user')->as('user.')->group(function () {
         Route::get('/logout', [DashboardController::class, 'userLogout'])->name('logout');
         Route::get('/invoice', [DashboardController::class, 'getInvoice'])->name('invoice');
         Route::get('/create-invoice', [DashboardController::class, 'getCreateInvoiceForm'])->name('create.invoice');
+        Route::post('/invoice/store', [InvoiceController::class, 'store'])->name('store.invoice');
     });
 });
