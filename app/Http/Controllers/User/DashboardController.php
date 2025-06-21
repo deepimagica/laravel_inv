@@ -21,14 +21,4 @@ class DashboardController extends Controller
 
         return redirect()->route('login.page');
     }
-
-    public function getInvoice()
-    {
-        return view('user.page.invoice');
-    }
-
-    public function getCreateInvoiceForm()
-    {
-        return view('user.page.create-invoice');
-    }
 }

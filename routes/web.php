@@ -14,8 +14,8 @@ Route::prefix('user')->as('user.')->group(function () {
     Route::group(['middleware' => ['check.user:user']], function () {
         Route::get('/dashboard', [DashboardController::class, 'getDashboard'])->name('dashboard');
         Route::get('/logout', [DashboardController::class, 'userLogout'])->name('logout');
-        Route::get('/invoice', [DashboardController::class, 'getInvoice'])->name('invoice');
-        Route::get('/create-invoice', [DashboardController::class, 'getCreateInvoiceForm'])->name('create.invoice');
+        Route::get('/invoice', [InvoiceController::class, 'getInvoice'])->name('invoice');
+        Route::get('/create-invoice', [InvoiceController::class, 'getCreateInvoiceForm'])->name('create.invoice');
         Route::post('/invoice/store', [InvoiceController::class, 'store'])->name('store.invoice');
     });
 });

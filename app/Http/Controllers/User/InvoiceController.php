@@ -9,6 +9,15 @@ use Illuminate\Support\Facades\Auth;
 
 class InvoiceController extends Controller
 {
+    public function getInvoice()
+    {
+        return view('user.page.invoice');
+    }
+
+    public function getCreateInvoiceForm()
+    {
+        return view('user.page.create-invoice');
+    }
     public function store(Request $request)
     {
         $request->validate([
