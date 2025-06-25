@@ -105,17 +105,17 @@
                                             </td>
                                             <td>
                                                 <input type="number" name="items[0][quantity]"
-                                                    class="form-control calc text-end" value="0">
+                                                    class="form-control calc text-end">
                                                 <span class="text-danger error-text" data-name="items.0.quantity"></span>
                                             </td>
                                             <td>
                                                 <input type="number" name="items[0][rate]"
-                                                    class="form-control calc text-end" value="0">
+                                                    class="form-control calc text-end">
                                                 <span class="text-danger error-text" data-name="items.0.rate"></span>
                                             </td>
                                             <td>
                                                 <input type="text" name="items[0][amount]"
-                                                    class="form-control subtotal text-end bg-light" value="0"
+                                                    class="form-control subtotal text-end bg-light"
                                                     readonly>
                                                 <span class="text-danger error-text" data-name="items.0.amount"></span>
                                             </td>
@@ -169,148 +169,5 @@
     </div>
 @endsection
 @section('script')
-    <script>
-        let rowIndex = 1;
-
-        function calculateRow(row) {
-            let quantity = parseFloat(row.find('[name$="[quantity]"]').val()) || 0;
-            let rate = parseFloat(row.find('[name$="[rate]"]').val()) || 0;
-            let amount = quantity * rate;
-            row.find('.subtotal').val(amount.toFixed(2));
-        }
-
-        function calculateTotal() {
-            let total = 0;
-            $('.subtotal').each(function() {
-                total += parseFloat($(this).val()) || 0;
-            });
-            $('#subtotal').val(total.toFixed(2));
-
-            let taxRate = parseFloat($('#tax').val()) || 0;
-            let tax = total * (taxRate / 100);
-            $('#total').val((total + tax).toFixed(2));
-        }
-
-        $(document).on('click', '#addRow', function() {
-            let newRow = `
-<tr>
-    <td>
-        <input type="text" name="items[${rowIndex}][product]" class="form-control" placeholder="Product Name">
-        <span class="text-danger error-text" data-name="items.${rowIndex}.product"></span>
-    </td>
-    <td>
-        <input type="text" name="items[${rowIndex}][hsn]" class="form-control" placeholder="HSN Code">
-        <span class="text-danger error-text" data-name="items.${rowIndex}.hsn"></span>
-    </td>
-    <td>
-        <input type="text" name="items[${rowIndex}][design]" class="form-control" placeholder="Design">
-        <span class="text-danger error-text" data-name="items.${rowIndex}.design"></span>
-    </td>
-    <td>
-        <input type="number" name="items[${rowIndex}][quantity]" class="form-control calc text-end" value="0">
-        <span class="text-danger error-text" data-name="items.${rowIndex}.quantity"></span>
-    </td>
-    <td>
-        <input type="number" name="items[${rowIndex}][rate]" class="form-control calc text-end" value="0">
-        <span class="text-danger error-text" data-name="items.${rowIndex}.rate"></span>
-    </td>
-    <td>
-        <input type="text" name="items[${rowIndex}][amount]" class="form-control subtotal text-end bg-light" value="0" readonly>
-        <span class="text-danger error-text" data-name="items.${rowIndex}.amount"></span>
-    </td>
-    <td class="text-center">
-        <button type="button" class="btn btn-sm btn-outline-danger remove-row"><i class="fas fa-trash"></i></button>
-    </td>
-</tr>
-`;
-            $('#invoiceBody').append(newRow);
-            rowIndex++;
-        });
-
-
-        $(document).on('click', '.remove-row', function() {
-            $(this).closest('tr').remove();
-            calculateTotal();
-        });
-
-        $(document).on('input', '.calc, #tax', function() {
-            $(this).closest('tr').each(function() {
-                calculateRow($(this));
-            });
-            calculateTotal();
-        });
-
-        $(document).ready(function() {
-            calculateRow($('#invoiceBody tr:first'));
-            calculateTotal();
-        });
-
-        $('#invoiceForm').on('submit', function(e) {
-            e.preventDefault();
-
-            let form = $(this);
-            let submitBtn = form.find('button[type=submit]');
-            let originalBtnHtml = submitBtn.html();
-            submitBtn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-1"></i> Saving...');
-
-            $.ajax({
-                url: form.attr('action'),
-                method: form.attr('method'),
-                data: form.serialize(),
-                success: function(response) {
-                    if (response.success) {
-                        Toast('success', response.message);
-                        form.trigger('reset');
-                        $('#invoiceBody').html(`
-            <tr>
-                <td><input type="text" name="items[0][product]" class="form-control" placeholder="Product Name"></td>
-                <td><input type="text" name="items[0][hsn]" class="form-control" placeholder="HSN Code"></td>
-                <td><input type="text" name="items[0][design]" class="form-control" placeholder="Design"></td>
-                <td><input type="number" name="items[0][quantity]" class="form-control calc text-end" value="0"></td>
-                <td><input type="number" name="items[0][rate]" class="form-control calc text-end" value="0"></td>
-                <td><input type="text" name="items[0][amount]" class="form-control subtotal text-end bg-light" value="0" readonly></td>
-                <td class="text-center">
-                    <button type="button" class="btn btn-sm btn-outline-danger remove-row">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </td>
-            </tr>
-        `);
-
-                        $('#subtotal').val('0.00');
-                        $('#tax').val('0');
-                        $('#total').val('0.00');
-                        rowIndex = 1;
-                        setTimeout(function() {
-                            window.location.href = response.data.redirect_url;
-                        }, 3000);
-                    } else {
-                        submitBtn.prop('disabled', false).html(originalBtnHtml);
-                    }
-                },
-                error: function(response) {
-                    submitBtn.prop('disabled', false).html(originalBtnHtml);
-                    let errors = response.responseJSON?.errors;
-                    if (errors) {
-                        $('.error-text').text('');
-                        $.each(errors, function(key, value) {
-                            let errorField = $('.error-text[data-name="' + key + '"]');
-                            if (errorField.length) {
-                                errorField.text(value[0]);
-                            } else {
-                                $("#" + key + "_error").text(value[0]).show();
-                            }
-                        });
-                    } else {
-                        console.error("Unexpected error:", response);
-                        alert('An unexpected error occurred. Check console or contact support.');
-                    }
-                },
-                complete: function() {
-                    submitBtn.prop('disabled', false).html(
-                        '<i class="fas fa-save me-1"></i> Save Invoice');
-                }
-            });
-        });
-    </script>
+<script src="{{ asset('assets/user/js/invoice/invoice-form.js') }}"></script>
 @endsection

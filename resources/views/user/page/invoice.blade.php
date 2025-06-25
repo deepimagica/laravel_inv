@@ -4,22 +4,28 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-sm-12">
-                <div class="page-title-box d-md-flex justify-content-md-between align-items-center">
+                <div class="p-3 d-md-flex justify-content-md-between align-items-center">
                     <h4 class="page-title">Invoice</h4>
-                    <div>
+                    {{-- <div>
                         <ol class="breadcrumb mb-0">
                             <li class="breadcrumb-item"><a href="#">Apps</a></li>
                             <li class="breadcrumb-item active">Invoice</li>
                         </ol>
+                    </div> --}}
+                    <div>
+                        <div>
+                            <a href="{{ route('user.create.invoice') }}"><button class="btn btn-primary">Create
+                                    Invoice</button></a>
+                        </div>
                     </div>
                 </div>
-                <div class="page-title-box d-md-flex justify-content-md-between align-items-center">
+                {{-- <div class="page-title-box d-md-flex justify-content-md-between align-items-center">
                     <div></div>
                     <div>
                         <a href="{{ route('user.create.invoice') }}"><button class="btn btn-primary">Create
                                 Invoice</button></a>
                     </div>
-                </div>
+                </div> --}}
             </div>
         </div>
         <div class="row">

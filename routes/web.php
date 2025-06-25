@@ -17,5 +17,6 @@ Route::prefix('user')->as('user.')->group(function () {
         Route::get('/invoice', [InvoiceController::class, 'getInvoice'])->name('invoice');
         Route::get('/create-invoice', [InvoiceController::class, 'getCreateInvoiceForm'])->name('create.invoice');
         Route::post('/invoice/store', [InvoiceController::class, 'store'])->name('store.invoice');
+        Route::get('/invoice/item-row-template', [InvoiceController::class, 'getItemRow'])->name('invoice.item_row');
     });
 });
