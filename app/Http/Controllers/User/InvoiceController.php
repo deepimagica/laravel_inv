@@ -7,6 +7,9 @@ use App\Models\Invoice;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\StoreInvoiceRequest;
+use Yajra\DataTables\DataTables;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Crypt;
 
 class InvoiceController extends Controller
 {
@@ -84,6 +87,7 @@ class InvoiceController extends Controller
     {
         $invoice = Invoice::create([
             'user_id' => auth()->guard('user')->id(),
+            'invoice_no' => 'INV-' . now()->format('Ymd') . '-' . mt_rand(1000, 9999),
             'billed_name' => $request->billed_name,
             'billed_address' => $request->billed_address,
             'billed_phone' => $request->billed_phone,
@@ -109,6 +113,48 @@ class InvoiceController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Invoice created successfully!',
+            'redirect_url' => route('user.invoice.list')
         ]);
+    }
+
+    public function getInvoiceList(Request $request)
+    {
+        if ($request->ajax()) {
+            $user = auth()->guard('user')->user();
+            $invoices = $user->invoices()->with('user')->orderBy('created_at', 'desc');
+
+            return DataTables::of($invoices)
+                ->addColumn('action', function ($row) {
+                    $encryptedId = Crypt::encrypt($row->id);
+                    $url = route('user.invoice.download', $encryptedId);
+                    return '<a href="' . $url . '" class="btn btn-sm btn-outline-primary" title="Download PDF">
+                            <i class="fa fa-download"></i>
+                            </a>';
+                })
+                ->addColumn('user_name', function ($row) {
+                    return $row->user->name ?? '-';
+                })
+                ->editColumn('created_at', function ($row) {
+                    return $row->created_at->format('Y-m-d');
+                })
+                ->rawColumns(['action', 'user_name'])
+                ->make(true);
+        }
+
+        return view('user.page.invoice_list');
+    }
+
+    public function downloadInvoice($encryptedId)
+    {
+        $id = Crypt::decrypt($encryptedId);
+        $invoice = Invoice::with('items')->findOrFail($id);
+        $user = auth()->guard('user')->user();
+
+        if ($invoice->user_id !== $user->id) {
+            abort(403);
+        }
+
+        $pdf = Pdf::loadView('user.page.invoice_pdf', compact('invoice', 'user'));
+        return $pdf->download('invoice_' . $invoice->invoice_no . '.pdf');
     }
 }

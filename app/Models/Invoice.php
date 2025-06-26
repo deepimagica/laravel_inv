@@ -8,6 +8,7 @@ class Invoice extends Model
 {
     protected $fillable = [
         'user_id',
+        'invoice_no',
         'billed_name',
         'billed_address',
         'billed_phone',
@@ -22,5 +23,10 @@ class Invoice extends Model
     public function items()
     {
         return $this->hasMany(InvoiceItem::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

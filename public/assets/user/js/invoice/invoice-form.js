@@ -64,8 +64,8 @@ $(document).ready(function () {
                         $('#tax').val('0');
                     });
                     setTimeout(() => {
-                        location.reload();
-                    }, 3000);
+                        window.location.href = response.redirect_url;
+                    }, 2000);
                 } else {
                     submitBtn.prop('disabled', false).html(originalBtnHtml);
                 }

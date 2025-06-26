@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('invoices', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->string('invoice_no')->unique();
             $table->string('billed_name');
             $table->text('billed_address');
             $table->string('billed_phone');

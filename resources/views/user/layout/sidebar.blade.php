@@ -24,8 +24,14 @@
                      </li>
                      <li class="nav-item">
                          <a class="nav-link" href="{{ route('user.invoice') }}">
-                             <i class="iconoir-report-columns menu-icon"></i>
+                             <i class="iconoir-paste-clipboard menu-icon"></i>
                              <span>Invoice</span>
+                         </a>
+                     </li>
+                     <li class="nav-item">
+                         <a class="nav-link" href="{{ route('user.invoice.list') }}">
+                             <i class="iconoir-list menu-icon"></i>
+                             <span>Invoice Data</span>
                          </a>
                      </li>
                  </ul>
