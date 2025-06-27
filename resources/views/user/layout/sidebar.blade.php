@@ -19,7 +19,6 @@
                          <a class="nav-link" href="{{ route('user.dashboard') }}">
                              <i class="iconoir-report-columns menu-icon"></i>
                              <span>Dashboard</span>
-                             <span class="badge text-bg-info ms-auto">New</span>
                          </a>
                      </li>
                      <li class="nav-item">

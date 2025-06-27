@@ -3,6 +3,7 @@
 use App\Http\Controllers\User\AuthController;
 use App\Http\Controllers\User\DashboardController;
 use App\Http\Controllers\User\InvoiceController;
+use App\Http\Controllers\User\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['middleware' => ['check.user:guest']], function () {
@@ -20,5 +21,7 @@ Route::prefix('user')->as('user.')->group(function () {
         Route::get('/invoice/item-row-template', [InvoiceController::class, 'getItemRow'])->name('invoice.item_row');
         Route::get('/invoice/list', [InvoiceController::class, 'getInvoiceList'])->name('invoice.list');
         Route::get('/invoice/download/{id}', [InvoiceController::class, 'downloadInvoice'])->name('invoice.download');
+        Route::get('/profile', [UserController::class, 'getProfilePage'])->name('profile');
+        Route::post('/user/change-password', [UserController::class, 'changePassword'])->name('changePassword');
     });
 });
