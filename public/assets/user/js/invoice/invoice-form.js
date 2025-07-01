@@ -77,9 +77,15 @@ $(document).ready(function () {
                 $.each(errors, function (key, value) {
                     const field = $('.error-text[data-name="' + key + '"]');
                     if (field.length) {
-                        field.text(value[0]);
+                        field.text(value[0]).show();
+                        setTimeout(() => {
+                            field.fadeOut();
+                        }, 3000);
                     } else {
                         $("#" + key + "_error").text(value[0]).show();
+                        setTimeout(() => {
+                            $("#" + key + "_error").fadeOut();
+                        }, 3000);
                     }
                 });
             },

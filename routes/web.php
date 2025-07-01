@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Admin\Auth\LoginController;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\User\AuthController;
 use App\Http\Controllers\User\DashboardController;
 use App\Http\Controllers\User\InvoiceController;
@@ -23,5 +25,17 @@ Route::prefix('user')->as('user.')->group(function () {
         Route::get('/invoice/download/{id}', [InvoiceController::class, 'downloadInvoice'])->name('invoice.download');
         Route::get('/profile', [UserController::class, 'getProfilePage'])->name('profile');
         Route::post('/user/change-password', [UserController::class, 'changePassword'])->name('changePassword');
+    });
+});
+
+Route::prefix('admin')->as('admin.')->group(function () {
+    Route::group(['middleware' => ['check.admin:guest']], function () {
+        Route::get('/', [LoginController::class, 'getLoginPage'])->name('login.page');
+        Route::post('/', [LoginController::class, 'postLoginPage'])->middleware('throttle:5,1')->name('post.login.page');
+    });
+    Route::group(['middleware' => ['check.admin:admin']], function () {
+        Route::get('/dashboard', [AdminDashboardController::class, 'getDashboardPage'])->name('dashboard');
+        Route::get('/users-list', [AdminDashboardController::class, 'getUsers'])->name('users');
+        Route::get('logout', [AdminDashboardController::class, 'adminLogOut'])->name('logout');
     });
 });

@@ -50,4 +50,14 @@ class User extends Authenticatable
     {
         return $this->hasMany(Invoice::class);
     }
+
+    public function subscription()
+    {
+        return $this->hasOne(UserSubscription::class)->latestOfMany();
+    }
+
+    public function plan()
+    {
+        return $this->belongsTo(SubscriptionPlan::class);
+    }
 }
