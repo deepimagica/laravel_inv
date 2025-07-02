@@ -37,5 +37,6 @@ Route::prefix('admin')->as('admin.')->group(function () {
         Route::get('/dashboard', [AdminDashboardController::class, 'getDashboardPage'])->name('dashboard');
         Route::get('/users-list', [AdminDashboardController::class, 'getUsers'])->name('users');
         Route::get('logout', [AdminDashboardController::class, 'adminLogOut'])->name('logout');
+        Route::get('logout', [AdminDashboardController::class, 'adminLogOut'])->name('logout');
     });
 });
