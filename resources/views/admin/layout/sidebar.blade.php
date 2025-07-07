@@ -1,7 +1,7 @@
  <div class="startbar d-print-none">
      <!--start brand-->
      <div class="brand">
-         <a href="{{ route('user.dashboard') }}" class="logo">
+         <a href="{{ route('admin.dashboard') }}" class="logo">
              <span>
                  <img src="{{ asset('assets/user/images/logo-sm.png') }}" alt="logo-small" class="logo-sm">
              </span>
