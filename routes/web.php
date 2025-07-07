@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\Auth\LoginController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\SubscriptionPlanController;
 use App\Http\Controllers\User\AuthController;
 use App\Http\Controllers\User\DashboardController;
 use App\Http\Controllers\User\InvoiceController;
@@ -37,5 +38,6 @@ Route::prefix('admin')->as('admin.')->group(function () {
         Route::get('/dashboard', [AdminDashboardController::class, 'getDashboardPage'])->name('dashboard');
         Route::get('/users-list', [AdminDashboardController::class, 'getUsers'])->name('users');
         Route::get('logout', [AdminDashboardController::class, 'adminLogOut'])->name('logout');
+        Route::resource('subscription-plans', SubscriptionPlanController::class);
     });
 });

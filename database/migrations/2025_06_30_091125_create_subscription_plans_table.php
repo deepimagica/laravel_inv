@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('subscription_plans', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('slug')->unique();
+            $table->string('slug')->nullable();
             $table->decimal('price', 10, 2);
             $table->enum('billing_period', ['monthly', 'yearly']);
             $table->integer('invoice_limit_per_month')->default(0);

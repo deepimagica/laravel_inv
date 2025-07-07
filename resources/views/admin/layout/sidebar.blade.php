@@ -27,6 +27,12 @@
                              <span>Users</span>
                          </a>
                      </li>
+                     <li class="nav-item">
+                         <a class="nav-link" href="{{ route('admin.subscription-plans.index') }}">
+                             <i class="iconoir-paste-clipboard menu-icon"></i>
+                             <span>Plans</span>
+                         </a>
+                     </li>
                  </ul>
              </div>
          </div>

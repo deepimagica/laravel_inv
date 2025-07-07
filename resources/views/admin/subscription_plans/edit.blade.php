@@ -21,23 +21,26 @@
             <div class="col-12">
                 <div class="card shadow border mb-4">
                     <div class="card-header bg-primary text-white">
-                        <h4 class="mb-0">Create Subscription Plan</h4>
+                        <h4 class="mb-0">Update Subscription Plan</h4>
                     </div>
                     <div class="card-body p-4">
-                        <form action="{{ route('admin.subscription-plans.store') }}" method="POST" id="planForm">
+                        <form action="{{ route('admin.subscription-plans.update', $subscription_plan->id) }}" id="planForm"
+                            method="POST">
                             @csrf
+                            @method('PUT')
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="name" class="form-label">Plan Name <span
                                             class="text-danger">*</span></label>
-                                    <input type="text" id="name" name="name" value="{{ old('name') }}"
+                                    <input type="text" name="name" value="{{ old('name', $subscription_plan->name) }}"
                                         class="form-control">
                                     <span class="text-danger pb-4" id="name_error"></span>
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="price" class="form-label">Price (₹) <span
                                             class="text-danger">*</span></label>
-                                    <input type="number" name="price" value="{{ old('price') }}" step="0.01"
+                                    <input type="number" name="price"
+                                        value="{{ old('price', $subscription_plan->price) }}" step="0.01"
                                         class="form-control">
                                     <span class="text-danger pb-4" id="price_error"></span>
                                 </div>
@@ -48,30 +51,29 @@
                                             class="text-danger">*</span></label>
                                     <select name="billing_period" class="form-select">
                                         <option value="">-- Select --</option>
-                                        <option value="monthly" {{ old('billing_period') == 'monthly' ? 'selected' : '' }}>
+                                        <option value="monthly"
+                                            {{ old('billing_period', $subscription_plan->billing_period) == 'monthly' ? 'selected' : '' }}>
                                             Monthly</option>
-                                        <option value="yearly" {{ old('billing_period') == 'yearly' ? 'selected' : '' }}>
+                                        <option value="yearly"
+                                            {{ old('billing_period', $subscription_plan->billing_period) == 'yearly' ? 'selected' : '' }}>
                                             Yearly</option>
                                     </select>
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="invoice_limit_per_month" class="form-label">Invoice Limit Per Month</label>
                                     <input type="number" name="invoice_limit_per_month"
-                                        value="{{ old('invoice_limit_per_month') }}" class="form-control">
+                                        value="{{ old('invoice_limit_per_month', $subscription_plan->invoice_limit_per_month) }}"
+                                        class="form-control">
                                 </div>
                             </div>
 
                             <div class="mb-3">
                                 <label class="form-label">Features</label>
                                 <div id="features-wrapper">
-                                    @if (old('features'))
-                                        @foreach (old('features') as $feature)
-                                            <input type="text" name="features[]" value="{{ $feature }}"
-                                                class="form-control mb-2" />
-                                        @endforeach
-                                    @else
-                                        <input type="text" name="features[]" class="form-control mb-2" />
-                                    @endif
+                                    @foreach (old('features', $subscription_plan->features ?? []) as $feature)
+                                        <input type="text" name="features[]" value="{{ $feature }}"
+                                            class="form-control mb-1" />
+                                    @endforeach
                                 </div>
                                 <button type="button" class="btn btn-sm btn-secondary mt-2" onclick="addFeature()">+ Add
                                     Feature</button>
@@ -80,13 +82,16 @@
                                 @enderror
                             </div>
 
-                            <div class="form-check mb-4">
+                            <div class="form-check mb-3">
+                                <input type="hidden" name="is_active" value="0">
                                 <input class="form-check-input" type="checkbox" name="is_active" id="is_active"
-                                    value="1" checked>
-                                <label class="form-check-label" for="is_active">Active</label>
+                                    value="1" {{ old('is_active', $subscription_plan->is_active) ? 'checked' : '' }}>
+                                <label class="form-check-label" for="is_active">
+                                    Active
+                                </label>
                             </div>
 
-                            <button type="submit" class="btn btn-success">Create Plan</button>
+                            <button type="submit" class="btn btn-success">Edit Plan</button>
                             <a href="{{ route('admin.subscription-plans.index') }}" class="btn btn-secondary">Cancel</a>
                         </form>
                     </div>
@@ -111,6 +116,7 @@
             const submitBtn = formData.find('button[type="submit"]');
             const originalText = submitBtn.html();
             submitBtn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-1"></i> Saving...');
+            $('span.text-danger').text('');
 
             $.ajax({
                 url: formData.attr('action'),

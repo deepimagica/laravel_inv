@@ -3,70 +3,94 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreSubscriptionPlanRequest;
+use App\Http\Requests\UpdateSubscriptionPlanRequest;
 use Illuminate\Http\Request;
 use App\Models\SubscriptionPlan;
+use Illuminate\Support\Facades\Crypt;
+use Yajra\DataTables\Facades\DataTables;
 
 class SubscriptionPlanController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function index(Request $request)
     {
-        $plans = SubscriptionPlan::latest()->get();
-        return view('admin.subscription_plans.index', compact('plans'));
+        if ($request->ajax()) {
+            $plans = SubscriptionPlan::select(['id', 'name', 'price', 'billing_period', 'invoice_limit_per_month', 'is_active', 'created_at']);
+
+            return DataTables::of($plans)
+                ->addColumn('action', function ($plan) {
+                    $planId = Crypt::encrypt($plan->id);
+                    $editUrl = route('admin.subscription-plans.edit', $planId);
+                    $deleteUrl = route('admin.subscription-plans.destroy', $planId);
+                    return '<a href="' . $editUrl . '" class="btn btn-sm btn-primary me-1">Edit</a>
+                            <button type="button" class="btn btn-sm btn-danger delete-btn"
+                                data-url="' . $deleteUrl . '">
+                                Delete
+                            </button>';
+                })
+                ->editColumn('is_active', function ($plan) {
+                    return $plan->is_active ? 'Yes' : 'No';
+                })
+                ->rawColumns(['action'])
+                ->make(true);
+        }
+
+        return view('admin.subscription_plans.index');
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         return view('admin.subscription_plans.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function store(StoreSubscriptionPlanRequest $request)
     {
-        $request->validate([
-            'name' => 'required|string',
-            'price' => 'required|numeric|min:0',
-            'billing_period' => 'required|in:monthly,yearly',
-            'invoice_limit_per_month' => 'required|integer|min:0',
+        $data = $request->validated();
+        $data['features'] = json_encode($data['features'] ?? []);
+
+        SubscriptionPlan::create($data);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Plan created successfully.',
+            'redirect_url' => route('admin.subscription-plans.index'),
         ]);
-
-        SubscriptionPlan::create($request->all());
-
-        return redirect()->route('admin.subscription-plans.index')->with('success', 'Plan created successfully.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function edit(SubscriptionPlan $subscription_plan)
+    public function edit($encryptedId)
     {
-        return view('admin.subscription_plans.edit', compact('subscription_plan'));
+        try {
+            $id = Crypt::decrypt($encryptedId);
+            $subscription_plan = SubscriptionPlan::findOrFail($id);
+            $subscription_plan->features = json_decode($subscription_plan->features ?? '[]');
+            return view('admin.subscription_plans.edit', compact('subscription_plan'));
+        } catch (\Exception $e) {
+            abort(404, 'Invalid or expired plan link.');
+        }
     }
 
-    public function update(Request $request, SubscriptionPlan $subscription_plan)
+    public function update(UpdateSubscriptionPlanRequest $request, SubscriptionPlan $subscription_plan)
     {
-        $request->validate([
-            'name' => 'required|string',
-            'price' => 'required|numeric|min:0',
-            'billing_period' => 'required|in:monthly,yearly',
-            'invoice_limit_per_month' => 'required|integer|min:0',
+        $data = $request->validated();
+        $data['features'] = json_encode($data['features'] ?? []);
+
+        $subscription_plan->update($data);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Plan updated successfully.',
+            'redirect_url' => route('admin.subscription-plans.index'),
         ]);
-
-        $subscription_plan->update($request->all());
-
-        return redirect()->route('admin.subscription-plans.index')->with('success', 'Plan updated successfully.');
     }
 
-    public function destroy(SubscriptionPlan $subscription_plan)
+    public function destroy($encryptedId)
     {
-        $subscription_plan->delete();
-        return back()->with('success', 'Plan deleted.');
+        $id = Crypt::decrypt($encryptedId);
+        $plan = SubscriptionPlan::findOrFail($id);
+        $plan->delete();
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Plan deleted successfully.',
+        ]);
     }
 }
