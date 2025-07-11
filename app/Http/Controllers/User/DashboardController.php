@@ -10,7 +10,9 @@ class DashboardController extends Controller
 {
     public function getDashboard(Request $request)
     {
-        return view('user.page.dashboard');
+        $authUser = Auth::guard('user')->user();
+        $invoicesCount = $authUser->invoices()->count();
+        return view('user.page.dashboard',compact('invoicesCount'));
     }
 
     public function userLogout(Request $request)

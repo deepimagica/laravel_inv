@@ -16,7 +16,7 @@
              <div class="d-flex align-items-start flex-column w-100">
                  <ul class="navbar-nav mb-auto w-100">
                      <li class="nav-item">
-                         <a class="nav-link" href="{{ route('user.dashboard') }}">
+                         <a class="nav-link" href="{{ route('admin.dashboard') }}">
                              <i class="iconoir-report-columns menu-icon"></i>
                              <span>Dashboard</span>
                          </a>

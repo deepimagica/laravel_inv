@@ -21,7 +21,7 @@
             <div class="card">
                 <form id="invoiceForm" method="POST" action="{{ route('user.store.invoice') }}">
                     @csrf
-                    <div class="card shadow border mb-4">
+                    <div class="shadow border">
                         <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
                             <h5 class="mb-0">Invoice Editor</h5>
                             <button type="button" id="addRow" class="btn btn-light btn-sm">
@@ -73,7 +73,6 @@
                                         </div>
                                     </div>
                                 </div>
-
                                 <table class="table table-hover align-middle table-bordered m-0" id="invoiceTable">
                                     <thead class="table-light text-center">
                                         <tr>
@@ -115,8 +114,7 @@
                                             </td>
                                             <td>
                                                 <input type="text" name="items[0][amount]"
-                                                    class="form-control subtotal text-end bg-light"
-                                                    readonly>
+                                                    class="form-control subtotal text-end bg-light" readonly>
                                                 <span class="text-danger error-text" data-name="items.0.amount"></span>
                                             </td>
                                             <td class="text-center">
@@ -166,8 +164,7 @@
             </div>
         </div>
     </div>
-    </div>
 @endsection
 @section('script')
-<script src="{{ asset('assets/user/js/invoice/invoice-form.js') }}"></script>
+    <script src="{{ asset('assets/user/js/invoice/invoice-form.js') }}"></script>
 @endsection

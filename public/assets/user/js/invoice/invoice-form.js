@@ -1,4 +1,4 @@
-let rowIndex = 1;
+let rowIndex = $('#invoiceBody tr').length;
 
 function calculateRow(row) {
     const quantity = parseFloat(row.find('[name$="[quantity]"]').val()) || 0;
@@ -20,7 +20,9 @@ function calculateTotal() {
 }
 
 $(document).ready(function () {
-    calculateRow($('#invoiceBody tr:first'));
+    $('#invoiceBody tr').each(function () {
+        calculateRow($(this));
+    });
     calculateTotal();
 
     $('#addRow').on('click', function () {
@@ -42,7 +44,9 @@ $(document).ready(function () {
         calculateTotal();
     });
 
-    $('#invoiceForm').on('submit', function (e) {
+    const isEdit = $('#editInvoiceForm').length > 0;
+    const formSelector = isEdit ? '#editInvoiceForm' : '#invoiceForm';
+    $(formSelector).on('submit', function (e) {
         e.preventDefault();
         const form = $(this);
         const submitBtn = form.find('button[type=submit]');
@@ -88,6 +92,13 @@ $(document).ready(function () {
                         }, 3000);
                     }
                 });
+                if (errors['items']) {
+                    Toast('error', errors['items'][0]);
+                    setTimeout(() => {
+                        window.location.href = location.href;
+                    }, 3000);
+                    return;
+                }
             },
             complete: function () {
                 submitBtn.prop('disabled', false).html(originalBtnHtml);

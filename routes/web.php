@@ -22,10 +22,13 @@ Route::prefix('user')->as('user.')->group(function () {
         Route::get('/create-invoice', [InvoiceController::class, 'getCreateInvoiceForm'])->name('create.invoice');
         Route::post('/invoice/store', [InvoiceController::class, 'store'])->name('store.invoice');
         Route::get('/invoice/item-row-template', [InvoiceController::class, 'getItemRow'])->name('invoice.item_row');
-        Route::get('/invoice/list', [InvoiceController::class, 'getInvoiceList'])->name('invoice.list');
+        Route::get('/invoice/list', [InvoiceController::class, 'index'])->name('invoice.list');
         Route::get('/invoice/download/{id}', [InvoiceController::class, 'downloadInvoice'])->name('invoice.download');
         Route::get('/profile', [UserController::class, 'getProfilePage'])->name('profile');
         Route::post('/user/change-password', [UserController::class, 'changePassword'])->name('changePassword');
+        Route::get('/invoice/edit/{id}', [InvoiceController::class, 'edit'])->name('invoice.edit');
+        Route::post('/invoice/update/{id}', [InvoiceController::class, 'update'])->name('invoice.update');
+        Route::delete('/invoice/delete/{id}', [InvoiceController::class, 'destroy'])->name('invoice.delete');
     });
 });
 

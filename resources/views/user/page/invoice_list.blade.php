@@ -15,12 +15,18 @@
             <div class="col-sm-12">
                 <div class="page-title-box d-md-flex justify-content-md-between align-items-center">
                     <h4 class="page-title">Invoice</h4>
-                    <div class="">
+                    {{-- <div class="">
                         <ol class="breadcrumb mb-0">
                             <li class="breadcrumb-item"><a href="#">Apps</a>
                             </li>
                             <li class="breadcrumb-item active">Invoice List</li>
                         </ol>
+                    </div> --}}
+                    <div>
+                        <div>
+                            <a href="{{ route('user.create.invoice') }}"><button class="btn btn-primary">Create
+                                    Invoice</button></a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -87,6 +93,47 @@
                         searchable: false
                     }
                 ]
+            });
+        });
+
+        $(document).on('click', '.delete-invoice', function() {
+            let url = $(this).data('url');
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: url,
+                        type: 'POST',
+                        data: {
+                            _method: 'DELETE',
+                            _token: '{{ csrf_token() }}'
+                        },
+                        success: function(response) {
+                            if (response.status === 'success') {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Deleted!',
+                                    text: response.message,
+                                    timer: 2000,
+                                    showConfirmButton: false
+                                });
+                                $('#plans-table').DataTable().ajax.reload();
+                            } else {
+                                Swal.fire('Error!', 'Something went wrong.', 'error');
+                            }
+                        },
+                        error: function() {
+                            Swal.fire('Error!', 'Delete request failed.', 'error');
+                        }
+                    });
+                }
             });
         });
     </script>
